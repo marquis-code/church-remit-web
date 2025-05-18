@@ -8,28 +8,28 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: "OLGnova",
+      title: "OLGNova",
       htmlAttrs: { lang: "en" },
       meta: [
         { charset: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
         { name: "format-detection", content: "telephone=no" },
-        { name: "description", content: "OLGnova - Health research publications and resources for healthcare professionals in Africa" },
+        { name: "description", content: "OLGNova - Health research publications and resources for healthcare professionals in Africa" },
         { name: "keywords", content: "health research, publications, Africa, healthcare, medical research" },
-        { name: "author", content: "OLGnova" },
-        { property: "og:title", content: "OLGnova" },
+        { name: "author", content: "OLGNova" },
+        { property: "og:title", content: "OLGNova" },
         { property: "og:description", content: "Health research publications and resources for healthcare professionals in Africa" },
         { property: "og:type", content: "website" },
-        { property: "og:url", content: "https://olgnova.com" },
-        { property: "og:image", content: "https://olgnova.com/og-image.jpg" },
+        { property: "og:url", content: "https://OLGNova.com" },
+        { property: "og:image", content: "https://OLGNova.com/og-image.jpg" },
         { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:title", content: "OLGnova" },
+        { name: "twitter:title", content: "OLGNova" },
         { name: "twitter:description", content: "Health research publications and resources for healthcare professionals in Africa" },
-        { name: "twitter:image", content: "https://olgnova.com/twitter-image.jpg" },
+        { name: "twitter:image", content: "https://OLGNova.com/twitter-image.jpg" },
       ],
       link: [
         { rel: "icon", type: "image/x-icon", href: "/favicon.svg" },
-        { rel: "canonical", href: "https://olgnova.com" },
+        { rel: "canonical", href: "https://OLGNova.com" },
       ],
     },
     pageTransition: { 
@@ -65,7 +65,7 @@ export default defineNuxtConfig({
   // Set public runtime config
   runtimeConfig: {
     public: {
-      siteUrl: 'https://olgnova.com',
+      siteUrl: 'https://OLGNova.com',
     }
   },
 
