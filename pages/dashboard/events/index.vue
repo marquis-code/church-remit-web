@@ -183,10 +183,6 @@
   const showAddEventModal = ref(false)
   const currentDate = ref(new Date())
   const selectedDay = ref<any>(null)
-
-  definePageMeta({
-    layout: 'dashboard'
-  })
   
   // New event form data
   const newEvent = ref({
