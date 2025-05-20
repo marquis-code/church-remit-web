@@ -7,10 +7,11 @@
       </div>
   
       <form @submit.prevent="handleSubmit" class="space-y-4">
+      <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div>
-          <label class="block text-xs font-medium text-gray-700">Full Name</label>
+          <label class="block text-xs font-medium text-gray-700">First Name</label>
           <input 
-            v-model="form.name"
+            v-model="form.firstName"
             type="text"
             :class="[
               'mt-1 block w-full rounded-lg border px-3 py-3 text-sm outline-none px-2',
@@ -18,8 +19,23 @@
             ]"
             placeholder="Enter your full name"
           />
-          <p v-if="errors.name" class="mt-1 text-sm text-red-600">{{ errors.name }}</p>
+          <p v-if="errors.firstName" class="mt-1 text-sm text-red-600">{{ errors.firstName }}</p>
         </div>
+
+        <div>
+          <label class="block text-xs font-medium text-gray-700">Last Name</label>
+          <input 
+            v-model="form.lastName"
+            type="text"
+            :class="[
+              'mt-1 block w-full rounded-lg border px-3 py-3 text-sm outline-none px-2',
+              errors.name ? 'border-red-300' : 'border-gray-300'
+            ]"
+            placeholder="Enter your full name"
+          />
+          <p v-if="errors.lastName" class="mt-1 text-sm text-red-600">{{ errors.lastName }}</p>
+        </div>
+      </section>
   
         <div>
           <label class="block text-xs font-medium text-gray-700">Email</label>
@@ -63,7 +79,6 @@
           <p v-if="errors.phone" class="mt-1 text-sm text-red-600">{{ errors.phone }}</p>
         </div>
   
-       <section class="grid grid-cols-2 gap-6">
         <div>
           <label class="block text-xs font-medium text-gray-700">Password</label>
           <div class="relative">
@@ -101,9 +116,8 @@
           />
           <p v-if="errors.confirmPassword" class="mt-1 text-sm text-red-600">{{ errors.confirmPassword }}</p>
         </div>
-       </section>
   
-        <div>
+        <!-- <div>
           <label class="block text-xs font-medium text-gray-700">Account Type</label>
           <select 
             v-model="form.accountType"
@@ -118,7 +132,7 @@
             <option value="member">Member</option>
           </select>
           <p v-if="errors.accountType" class="mt-1 text-sm text-red-600">{{ errors.accountType }}</p>
-        </div>
+        </div> -->
   
         <div class="flex items-center">
           <input 
@@ -137,10 +151,10 @@
   
         <button 
           type="submit"
-          :disabled="isLoading"
+          :disabled="loading"
           class="w-full bg-blue-600 text-white text-sm rounded-lg px-4 py-3 hover:bg-blue-700 disabled:opacity-50"
         >
-          <span v-if="isLoading">
+          <span v-if="loading">
             <Loader class="animate-spin  w-5 h-5 mx-auto" />
           </span>
           <span v-else>Create Account</span>
@@ -173,24 +187,24 @@
   const router = useRouter()
   
   const form = reactive({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     churchName: '',
     phone: '',
     password: '',
     confirmPassword: '',
-    accountType: '',
     agreeTerms: false
   })
   
   const errors = reactive({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     churchName: '',
     phone: '',
     password: '',
     confirmPassword: '',
-    accountType: '',
     agreeTerms: ''
   })
   
@@ -201,11 +215,17 @@
     let isValid = true
     Object.keys(errors).forEach(key => errors[key as keyof typeof errors] = '')
   
-    if (!form.name) {
-      errors.name = 'Full name is required'
+    if (!form.firstName) {
+      errors.firstName = 'First name is required'
       isValid = false
     }
   
+
+    if (!form.lastName) {
+      errors.lastName = 'Last name is required'
+      isValid = false
+    }
+
     if (!form.email) {
       errors.email = 'Email is required'
       isValid = false
@@ -237,10 +257,10 @@
       isValid = false
     }
   
-    if (!form.accountType) {
-      errors.accountType = 'Account type is required'
-      isValid = false
-    }
+    // if (!form.accountType) {
+    //   errors.accountType = 'Account type is required'
+    //   isValid = false
+    // }
   
     if (!form.agreeTerms) {
       errors.agreeTerms = 'You must agree to the Terms of Service and Privacy Policy'
@@ -255,8 +275,7 @@
   
     try {
       isLoading.value = true
-    //   await authStore.register(form)
-      router.push('/auth/verify-email')
+      await createAdmin(form)
     } catch (error: any) {
       errors.email = error.message
     } finally {

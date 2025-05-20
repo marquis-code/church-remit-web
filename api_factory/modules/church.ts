@@ -1,5 +1,5 @@
-// src/api/churchMgtApi.ts
-import { GATEWAY_ENDPOINT } from '../axios.config'
+import { GATEWAY_ENDPOINT } from "../axios.config";
+import { useUser } from "@/composables/auth/user"
 
 // Type Definitions
 type BankAccount = {
@@ -39,20 +39,21 @@ type ChurchProfilePayload = {
   description: string
 }
 
+const { church } = useUser()
 // API Module
 export const church_mgt_api = {
-  getChurchProfile: async (id: string) => {
-    const url = `${GATEWAY_ENDPOINT}/churches/${id}`
-    return axios.get(url)
+  getChurchProfile: async () => {
+    const url = `/churches/${church.value.id}`
+    return GATEWAY_ENDPOINT.get(url)
   },
 
-  updateChurchProfile: async (id: string, payload: ChurchProfilePayload) => {
-    const url = `${GATEWAY_ENDPOINT}/churches/${id}`
-    return axios.put(url, payload)
+  updateChurchProfile: async (payload: ChurchProfilePayload) => {
+    const url = `/churches/${church.value.id}`
+    return GATEWAY_ENDPOINT.put(url, payload)
   },
 
-  updateFinancialConfig: async (id: string, payload: UpdateFinancialConfigPayload) => {
-    const url = `${GATEWAY_ENDPOINT}/churches/${id}/financial-config`
-    return axios.put(url, payload)
+  updateFinancialConfig: async (payload: UpdateFinancialConfigPayload) => {
+    const url = `/churches/${church.value.id}/financial-config`
+    return GATEWAY_ENDPOINT.put(url, payload)
   }
 }

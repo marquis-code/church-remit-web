@@ -1,4 +1,4 @@
-import { GATEWAY_ENDPOINT } from '../axios.config'
+import { GATEWAY_ENDPOINT } from "../axios.config";
 
 // Type Definitions
 
@@ -30,17 +30,17 @@ export type VolunteerQueryParams = {
 export const volunteer_mgt_api = {
     $_create_volunteer_profile: async (id: string, payload: VolunteerProfile) => {
       const url = `/volunteers/member/${id}`
-      return axios.post(url, payload)
+      return GATEWAY_ENDPOINT.post(url, payload)
     },
   
     $_get_volunteers: async (branchId: string, params?: VolunteerQueryParams) => {
       const url = `/volunteers/branch/${branchId}`
-      return axios.get(url, { params })
+      return GATEWAY_ENDPOINT.get(url, { params })
     },
   
     $_update_volunteer_profile: async (volunteerId: string, payload: VolunteerProfile) => {
       const url = `/volunteers/${volunteerId}`
-      return axios.put(url, payload)
+      return GATEWAY_ENDPOINT.put(url, payload)
     }
   }
   

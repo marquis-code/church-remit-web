@@ -1,4 +1,4 @@
-import { GATEWAY_ENDPOINT } from '../axios.config'
+import { GATEWAY_ENDPOINT } from "../axios.config";
 
 // Type Definitions
 
@@ -33,22 +33,22 @@ export type FacilityBooking = {
 export const facility_mgt_api = {
     $_create_facility: async (id: string, payload: Facility) => {
       const url = `/facilities/branch/${id}`
-      return axios.post(url, payload)
+      return GATEWAY_ENDPOINT.post(url, payload)
     },
   
     $_get_facilities: async () => {
       const url = `/facilities/branch/${id}`
-      return axios.get(url)
+      return GATEWAY_ENDPOINT.get(url)
     },
   
     $_create_asset: async (id: string, payload: Asset) => {
       const url = `/facilities/${id}/assets`
-      return axios.post(url, payload)
+      return GATEWAY_ENDPOINT.post(url, payload)
     },
   
     $_book_facility: async (facilityId: string, payload: FacilityBooking) => {
       const url = `/facilities/${facilityId}/bookings`
-      return axios.post(url, payload)
+      return GATEWAY_ENDPOINT.post(url, payload)
     }
   }
   

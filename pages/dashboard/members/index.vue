@@ -82,6 +82,7 @@
   </template>
   
   <script setup lang="ts">
+  
   useHead({
     title: 'Member Engagement & Discipleship Dashboard',
     meta: [

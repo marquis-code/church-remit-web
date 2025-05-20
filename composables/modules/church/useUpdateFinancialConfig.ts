@@ -22,13 +22,13 @@ export const useUpdateFinancialConfig = () => {
   const error = ref<string | null>(null)
   const success = ref(false)
 
-  const updateFinancialConfig = async (churchId: string, config: { financialConfig: FinancialConfig }) => {
+  const updateFinancialConfig = async (config: { financialConfig: FinancialConfig }) => {
     loading.value = true
     error.value = null
     success.value = false
 
     try {
-      const response = await church_mgt_api.updateFinancialConfig(churchId, config)
+      const response = await church_mgt_api.updateFinancialConfig(config)
       success.value = true
       return response.data
     } catch (err: any) {

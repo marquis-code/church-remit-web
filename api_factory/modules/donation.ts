@@ -1,4 +1,4 @@
-import { GATEWAY_ENDPOINT } from '../axios.config'
+import { GATEWAY_ENDPOINT } from "../axios.config";
 
 // Type Definitions
 
@@ -21,12 +21,12 @@ export type DonationQueryParams = {
 export const donation_mgt_api = {
     $_create_donation: async (id: string, payload: Donation) => {
       const url = `/donations/branch/${id}`
-      return axios.post(url, payload)
+      return GATEWAY_ENDPOINT.post(url, payload)
     },
   
     $_get_donations: async (branchId: string, params?: DonationQueryParams) => {
       const url = `/donations/branch/${branchId}`
-      return axios.get(url, { params })
+      return GATEWAY_ENDPOINT.get(url, { params })
     }
   }
   

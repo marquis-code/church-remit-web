@@ -35,10 +35,15 @@ export const useGetChurchProfile = () => {
     }
   }
 
+  onMounted(() => {
+    console.log('hello')
+    getChurchProfile()
+  })
+
   return {
     loading,
     error,
     churchProfile,
-    getChurchProfile,
+    getChurchProfile
   }
 }

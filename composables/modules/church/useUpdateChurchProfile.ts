@@ -14,18 +14,19 @@ type ChurchProfile = {
   description: string
 }
 
+
 export const useUpdateChurchProfile = () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
   const success = ref(false)
 
-  const updateChurchProfile = async (churchId: string, profileData: ChurchProfile) => {
+  const updateChurchProfile = async (profileData: ChurchProfile) => {
     loading.value = true
     error.value = null
     success.value = false
 
     try {
-      const response = await church_mgt_api.updateChurchProfile(churchId, profileData)
+      const response = await church_mgt_api.updateChurchProfile(profileData)
       success.value = true
       return response.data
     } catch (err: any) {

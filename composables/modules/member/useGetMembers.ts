@@ -22,6 +22,10 @@ export const useGetMembers = () => {
     }
   }
 
+  onMounted(()=> {
+    getMembers()
+  })
+
   return {
     loading,
     error,

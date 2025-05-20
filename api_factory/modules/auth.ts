@@ -1,4 +1,4 @@
-import { GATEWAY_ENDPOINT } from '../axios.config'
+import { GATEWAY_ENDPOINT } from "../axios.config";
 import { useUser } from '@/composables/auth/user'
 
 export const auth_api = {
@@ -17,7 +17,7 @@ export const auth_api = {
     email: string,
     password: string
 }) => {
-    const url = 'auth/login'
+    const url = '/auth/login'
     return GATEWAY_ENDPOINT.post(url, credential)
   },
   $_verify_email: (token: string) => {

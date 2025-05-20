@@ -1,4 +1,4 @@
-import { GATEWAY_ENDPOINT } from '../axios.config'
+import { GATEWAY_ENDPOINT } from "../axios.config";
 
 // Type Definitions
 export type Group = {
@@ -17,17 +17,17 @@ export type GroupMemberPayload = {
 export const group_mgt_api = {
     $_create_group: async (id: string, payload: Group) => {
       const url = `/groups/branch/${id}`
-      return axios.post(url, payload)
+      return GATEWAY_ENDPOINT.post(url, payload)
     },
   
     $_get_groups: async (metadata: { type: string, status: string }) => {
       const url = `/groups/branch/${id}?type=${metadata.type}&status=${metadata.status}`
-      return axios.get(url)
+      return GATEWAY_ENDPOINT.get(url)
     },
   
     $_add_member_to_group: async (groupId: string, memberId: string, payload: GroupMemberPayload) => {
       const url = `/groups/${groupId}/members/${memberId}`
-      return axios.post(url, payload)
+      return GATEWAY_ENDPOINT.post(url, payload)
     }
   }
   

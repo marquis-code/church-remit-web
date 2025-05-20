@@ -91,7 +91,14 @@
         </NuxtLink>
       </div>
 
-        <div class="pt-5">
+      <button 
+              type="submit"
+              :disabled="loading"
+              class="w-full bg-blue-600 text-white rounded-lg px-4 py-3.5 hover:bg-blue-700 disabled:opacity-50"
+            >
+             {{ loading ? 'processing..' : 'SignIn'}}
+            </button>
+        <!-- <div class="pt-5">
           <button 
               type="submit"
               :disabled="isLoading"
@@ -102,7 +109,7 @@
               </span>
               <span v-else>Sign In</span>
             </button>
-        </div>
+        </div> -->
     </form>
 
     <p class="mt-6 text-center text-sm text-gray-600">
@@ -172,7 +179,11 @@ const handleSubmit = async () => {
     //   password: form.password,
     //   rememberMe: form.rememberMe
     // })
-    router.push('/dashboard')
+    const { rememberMe, ...rest } = form
+    await login(rest).then(() => {
+      // router.push('/dashboard')
+    })
+    // router.push('/dashboard')
   } catch (error: any) {
     errors.email = error.message
   } finally {
@@ -196,7 +207,10 @@ const signInWithFacebook = async () => {
   try {
     isLoading.value = true
     // await authStore.loginWithFacebook()
-    router.push('/dashboard')
+    const { rememberMe, ...rest } = form
+    await login(rest).then(() => {
+      // router.push('/dashboard')
+    })
   } catch (error: any) {
     console.error('Facebook sign-in failed:', error)
   } finally {

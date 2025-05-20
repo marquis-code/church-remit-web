@@ -1,1271 +1,1145 @@
 <template>
-    <main>
-      <div class="space-y-6 animate-fade-in">
-        <!-- Page header -->
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 class="text-2xl font-bold leading-7 text-gray-900">Church Profile Setup</h2>
-            <p class="mt-1 text-sm text-gray-500">Configure your church details, branches, and financial settings</p>
-          </div>
-          <div class="mt-4 flex flex-col sm:flex-row sm:space-x-3 md:mt-0">
-            <button
-              type="button"
-              @click="saveProfile"
-              class="inline-flex items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            >
-              <Save class="mr-2 h-4 w-4" />
-              Save Changes
-            </button>
+  <div class="min-h-screen">
+    <!-- Loading overlay -->
+    <div v-if="isLoading" class="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex items-center justify-center">
+      <div class="flex flex-col items-center">
+        <div class="w-16 h-16 relative">
+          <div class="church-loader">
+            <div class="church-steeple"></div>
+            <div class="church-body"></div>
           </div>
         </div>
-  
-        <!-- Profile Tabs -->
-        <div class="border-b border-gray-200 animate-fade-in animation-delay-100">
-          <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-            <button
-              @click="activeTab = 'general'"
-              :class="[
-                activeTab === 'general'
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700',
-                'whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium'
-              ]"
-            >
-              General Information
-            </button>
-            <button
-              @click="activeTab = 'branches'"
-              :class="[
-                activeTab === 'branches'
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700',
-                'whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium'
-              ]"
-            >
-              Branch Setup
-            </button>
-            <button
-              @click="activeTab = 'financial'"
-              :class="[
-                activeTab === 'financial'
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700',
-                'whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium'
-              ]"
-            >
-              Financial Configuration
-            </button>
-          </nav>
-        </div>
-  
-        <!-- General Information Tab -->
-        <div v-if="activeTab === 'general'" class="animate-fade-in animation-delay-200">
-          <div class="bg-white shadow rounded-lg overflow-hidden">
-            <div class="px-4 py-5 sm:p-6">
-              <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                <!-- Church Logo -->
-                <div class="sm:col-span-6">
-                  <label class="block text-sm font-medium text-gray-700">Church Logo</label>
-                  <div class="mt-2 flex items-center">
-                    <span class="h-24 w-24 overflow-hidden rounded-md bg-gray-100">
-                      <img v-if="churchProfile.logo" :src="churchProfile.logo" alt="Church logo" class="h-full w-full object-cover" />
-                      <div v-else class="flex h-full w-full items-center justify-center">
-                        <Building2 class="h-12 w-12 text-gray-300" />
-                      </div>
-                    </span>
-                    <button
-                      type="button"
-                      class="ml-5 rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                      Change
-                    </button>
-                  </div>
-                </div>
-  
-                <!-- Church Name -->
-                <div class="sm:col-span-3">
-                  <label for="church-name" class="block text-sm font-medium text-gray-700">Church Name</label>
-                  <div class="mt-1">
-                    <input
-                      type="text"
-                      id="church-name"
-                      v-model="churchProfile.name"
-                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
-                </div>
-  
-                <!-- Denomination -->
-                <div class="sm:col-span-3">
-                  <label for="denomination" class="block text-sm font-medium text-gray-700">Denomination</label>
-                  <div class="mt-1">
-                    <input
-                      type="text"
-                      id="denomination"
-                      v-model="churchProfile.denomination"
-                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
-                </div>
-  
-                <!-- Email -->
-                <div class="sm:col-span-3">
-                  <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                  <div class="mt-1">
-                    <input
-                      type="email"
-                      id="email"
-                      v-model="churchProfile.email"
-                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
-                </div>
-  
-                <!-- Phone -->
-                <div class="sm:col-span-3">
-                  <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
-                  <div class="mt-1">
-                    <input
-                      type="tel"
-                      id="phone"
-                      v-model="churchProfile.phone"
-                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
-                </div>
-  
-                <!-- Address -->
-                <div class="sm:col-span-6">
-                  <label for="street-address" class="block text-sm font-medium text-gray-700">Street Address</label>
-                  <div class="mt-1">
-                    <input
-                      type="text"
-                      id="street-address"
-                      v-model="churchProfile.address.street"
-                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
-                </div>
-  
-                <!-- City, State, Zip -->
-                <div class="sm:col-span-2">
-                  <label for="city" class="block text-sm font-medium text-gray-700">City</label>
-                  <div class="mt-1">
-                    <input
-                      type="text"
-                      id="city"
-                      v-model="churchProfile.address.city"
-                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
-                </div>
-  
-                <div class="sm:col-span-2">
-                  <label for="state" class="block text-sm font-medium text-gray-700">State / Province</label>
-                  <div class="mt-1">
-                    <input
-                      type="text"
-                      id="state"
-                      v-model="churchProfile.address.state"
-                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
-                </div>
-  
-                <div class="sm:col-span-2">
-                  <label for="postal-code" class="block text-sm font-medium text-gray-700">ZIP / Postal Code</label>
-                  <div class="mt-1">
-                    <input
-                      type="text"
-                      id="postal-code"
-                      v-model="churchProfile.address.postalCode"
-                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
-                </div>
-  
-                <!-- Country -->
-                <div class="sm:col-span-3">
-                  <label for="country" class="block text-sm font-medium text-gray-700">Country</label>
-                  <div class="mt-1">
-                    <select
-                      id="country"
-                      v-model="churchProfile.address.country"
-                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    >
-                      <option value="United States">United States</option>
-                      <option value="Canada">Canada</option>
-                      <option value="United Kingdom">United Kingdom</option>
-                      <option value="Nigeria">Nigeria</option>
-                      <option value="Ghana">Ghana</option>
-                      <option value="South Africa">South Africa</option>
-                      <option value="Kenya">Kenya</option>
-                    </select>
-                  </div>
-                </div>
-  
-                <!-- Website -->
-                <div class="sm:col-span-3">
-                  <label for="website" class="block text-sm font-medium text-gray-700">Website</label>
-                  <div class="mt-1">
-                    <input
-                      type="url"
-                      id="website"
-                      v-model="churchProfile.website"
-                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
-                </div>
-  
-                <!-- Description -->
-                <div class="sm:col-span-6">
-                  <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                  <div class="mt-1">
-                    <textarea
-                      id="description"
-                      v-model="churchProfile.description"
-                      rows="3"
-                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    ></textarea>
-                  </div>
-                  <p class="mt-2 text-sm text-gray-500">Brief description of your church for public display.</p>
-                </div>
+        <p class="mt-4 text-purple-800 font-medium animate-pulse">Loading church profile...</p>
+      </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto">
+      <!-- Header with church name -->
+      <header class="mb-8 text-start slide-in-top">
+        <h1 class="text-3xl md:text-4xl font-bold text-purple-900 mb-2">
+          {{ church?.name || 'Church Profile' }}
+        </h1>
+        <p class="text-purple-600 text-lg">Profile Management Dashboard</p>
+      </header>
+
+      <!-- Main content -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Profile Card -->
+        <div class="lg:col-span-2 bg-white rounded-2xl shadow-xl overflow-hidden fade-in">
+          <div class="relative h-32 bg-gradient-to-r from-purple-600 to-purple-400">
+            <div class="absolute -bottom-16 left-8 w-32 h-32 rounded-full bg-white p-2 shadow-lg border-4 border-white">
+              <div v-if="church?.logo" class="w-full h-full rounded-full bg-cover bg-center" :style="`background-image: url(${church?.logo})`"></div>
+              <div v-else class="w-full h-full rounded-full bg-purple-100 flex items-center justify-center">
+                <span class="text-4xl font-bold text-purple-600">{{ getInitials(church?.name) }}</span>
               </div>
             </div>
           </div>
-        </div>
-  
-        <!-- Branch Setup Tab -->
-        <div v-if="activeTab === 'branches'" class="animate-fade-in animation-delay-200">
-          <div class="bg-white shadow rounded-lg overflow-hidden mb-6">
-            <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-              <div class="flex items-center justify-between">
-                <h3 class="text-lg font-medium leading-6 text-gray-900">Branch Configuration</h3>
-                <button
-                  type="button"
-                  @click="showAddBranchModal = true"
-                  class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                >
-                  <Plus class="mr-1 h-4 w-4" />
-                  Add Branch
-                </button>
+          
+          <div class="pt-20 p-8">
+            <div class="flex flex-wrap justify-between items-start mb-6">
+              <div>
+                <h2 class="text-2xl font-bold text-gray-800">{{ church?.name }}</h2>
+                <p v-if="church?.description" class="text-gray-600 mt-1">{{ church?.description }}</p>
+                <p v-else class="text-gray-400 italic mt-1">No description available</p>
               </div>
-              <p class="mt-1 max-w-2xl text-sm text-gray-500">Configure multi-branch setup and assign administrators.</p>
+              <button 
+                @click="openProfileModal" 
+                class="mt-2 md:mt-0 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow transition-all duration-300 transform hover:scale-105 flex items-center"
+              >
+                <span>Edit Profile</span>
+                <span class="ml-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                </span>
+              </button>
             </div>
-            <div class="px-4 py-5 sm:p-6">
-              <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-300">
-                  <thead>
-                    <tr>
-                      <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Branch Name</th>
-                      <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Location</th>
-                      <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Administrator</th>
-                      <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
-                      <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                        <span class="sr-only">Actions</span>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-gray-200 bg-white">
-                    <tr v-for="branch in branches" :key="branch.id" class="hover:bg-gray-50">
-                      <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{{ branch.name }}</td>
-                      <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ branch.location }}</td>
-                      <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        <div class="flex items-center">
-                          <img :src="branch.adminAvatar" alt="" class="h-8 w-8 rounded-full mr-2" />
-                          {{ branch.adminName }}
-                        </div>
-                      </td>
-                      <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        <span :class="[
-                          'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
-                          branch.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                        ]">
-                          {{ branch.status }}
-                        </span>
-                      </td>
-                      <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                        <div class="flex justify-end space-x-2">
-                          <button
-                            type="button"
-                            @click="editBranch(branch)"
-                            class="text-indigo-600 hover:text-indigo-900"
-                          >
-                            <Edit class="h-5 w-5" />
-                            <span class="sr-only">Edit</span>
-                          </button>
-                          <button
-                            type="button"
-                            @click="assignAdmin(branch)"
-                            class="text-blue-600 hover:text-blue-900"
-                          >
-                            <UserPlus class="h-5 w-5" />
-                            <span class="sr-only">Assign Admin</span>
-                          </button>
-                          <button
-                            type="button"
-                            @click="confirmDeleteBranch(branch)"
-                            class="text-red-600 hover:text-red-900"
-                          >
-                            <Trash2 class="h-5 w-5" />
-                            <span class="sr-only">Delete</span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-  
-          <!-- Branch Admins -->
-          <div class="bg-white shadow rounded-lg overflow-hidden">
-            <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-              <h3 class="text-lg font-medium leading-6 text-gray-900">Branch Administrators</h3>
-              <p class="mt-1 max-w-2xl text-sm text-gray-500">Manage administrators for each branch.</p>
-            </div>
-            <div class="px-4 py-5 sm:p-6">
-              <ul role="list" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                <li v-for="admin in branchAdmins" :key="admin.id" class="col-span-1 bg-white rounded-lg shadow divide-y divide-gray-200">
-                  <div class="w-full flex items-center justify-between p-6 space-x-6">
-                    <div class="flex-1 truncate">
-                      <div class="flex items-center space-x-3">
-                        <h3 class="text-gray-900 text-sm font-medium truncate">{{ admin.name }}</h3>
-                        <span :class="[
-                          'flex-shrink-0 inline-block px-2 py-0.5 text-xs font-medium rounded-full',
-                          admin.role === 'Super Admin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
-                        ]">
-                          {{ admin.role }}
-                        </span>
-                      </div>
-                      <p class="mt-1 text-gray-500 text-sm truncate">{{ admin.branch }}</p>
-                    </div>
-                    <img class="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0" :src="admin.avatar" alt="" />
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-4 slide-in-left">
+                <div class="profile-item">
+                  <div class="profile-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                   </div>
                   <div>
-                    <div class="-mt-px flex divide-x divide-gray-200">
-                      <div class="w-0 flex-1 flex">
-                        <a
-                          href="#"
-                          class="relative -mr-px w-0 flex-1 inline-flex items-center justify-center py-4 text-sm text-gray-700 font-medium border border-transparent rounded-bl-lg hover:text-gray-500"
-                        >
-                          <Mail class="w-5 h-5 text-gray-400" />
-                          <span class="ml-3">Email</span>
-                        </a>
-                      </div>
-                      <div class="-ml-px w-0 flex-1 flex">
-                        <a
-                          href="#"
-                          class="relative w-0 flex-1 inline-flex items-center justify-center py-4 text-sm text-gray-700 font-medium border border-transparent rounded-br-lg hover:text-gray-500"
-                        >
-                          <Phone class="w-5 h-5 text-gray-400" />
-                          <span class="ml-3">Call</span>
-                        </a>
-                      </div>
-                    </div>
+                    <p class="text-sm text-gray-500">Email</p>
+                    <p class="text-gray-800">{{ church?.email || 'Not provided' }}</p>
                   </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-  
-        <!-- Financial Configuration Tab -->
-        <div v-if="activeTab === 'financial'" class="animate-fade-in animation-delay-200">
-          <div class="bg-white shadow rounded-lg overflow-hidden mb-6">
-            <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-              <h3 class="text-lg font-medium leading-6 text-gray-900">Financial Details</h3>
-              <p class="mt-1 max-w-2xl text-sm text-gray-500">Configure bank accounts and payment methods.</p>
-            </div>
-            <div class="px-4 py-5 sm:p-6">
-              <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                <!-- Bank Name -->
-                <div class="sm:col-span-3">
-                  <label for="bank-name" class="block text-sm font-medium text-gray-700">Bank Name</label>
-                  <div class="mt-1">
-                    <input
-                      type="text"
-                      id="bank-name"
-                      v-model="financialConfig.bankName"
-                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
-                </div>
-  
-                <!-- Account Number -->
-                <div class="sm:col-span-3">
-                  <label for="account-number" class="block text-sm font-medium text-gray-700">Account Number</label>
-                  <div class="mt-1">
-                    <input
-                      type="text"
-                      id="account-number"
-                      v-model="financialConfig.accountNumber"
-                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
-                </div>
-  
-                <!-- Account Name -->
-                <div class="sm:col-span-3">
-                  <label for="account-name" class="block text-sm font-medium text-gray-700">Account Name</label>
-                  <div class="mt-1">
-                    <input
-                      type="text"
-                      id="account-name"
-                      v-model="financialConfig.accountName"
-                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
-                </div>
-  
-                <!-- Routing Number -->
-                <div class="sm:col-span-3">
-                  <label for="routing-number" class="block text-sm font-medium text-gray-700">Routing Number</label>
-                  <div class="mt-1">
-                    <input
-                      type="text"
-                      id="routing-number"
-                      v-model="financialConfig.routingNumber"
-                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
-                </div>
-  
-                <!-- Tax ID -->
-                <div class="sm:col-span-3">
-                  <label for="tax-id" class="block text-sm font-medium text-gray-700">Tax ID / EIN</label>
-                  <div class="mt-1">
-                    <input
-                      type="text"
-                      id="tax-id"
-                      v-model="financialConfig.taxId"
-                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
-                </div>
-  
-                <!-- Currency -->
-                <div class="sm:col-span-3">
-                  <label for="currency" class="block text-sm font-medium text-gray-700">Currency</label>
-                  <div class="mt-1">
-                    <select
-                      id="currency"
-                      v-model="financialConfig.currency"
-                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    >
-                      <option value="USD">USD - US Dollar</option>
-                      <option value="EUR">EUR - Euro</option>
-                      <option value="GBP">GBP - British Pound</option>
-                      <option value="NGN">NGN - Nigerian Naira</option>
-                      <option value="GHS">GHS - Ghanaian Cedi</option>
-                      <option value="KES">KES - Kenyan Shilling</option>
-                      <option value="ZAR">ZAR - South African Rand</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-  
-          <!-- Payment Methods -->
-          <div class="bg-white shadow rounded-lg overflow-hidden">
-            <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-              <div class="flex items-center justify-between">
-                <h3 class="text-lg font-medium leading-6 text-gray-900">Payment Methods</h3>
-                <button
-                  type="button"
-                  @click="showAddPaymentMethodModal = true"
-                  class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                >
-                  <Plus class="mr-1 h-4 w-4" />
-                  Add Method
-                </button>
-              </div>
-              <p class="mt-1 max-w-2xl text-sm text-gray-500">Configure payment methods for donations and contributions.</p>
-            </div>
-            <div class="px-4 py-5 sm:p-6">
-              <ul role="list" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                <li v-for="method in paymentMethods" :key="method.id" class="col-span-1 bg-gray-50 rounded-lg shadow divide-y divide-gray-200 hover:shadow-md transition-shadow duration-200">
-                  <div class="w-full flex items-center justify-between p-4">
-                    <div class="flex-1">
-                      <div class="flex items-center">
-                        <component :is="method.icon" class="h-8 w-8 text-gray-500 mr-3" />
-                        <div>
-                          <h3 class="text-gray-900 text-sm font-medium">{{ method.name }}</h3>
-                          <p class="text-gray-500 text-xs mt-1">{{ method.description }}</p>
-                        </div>
-                      </div>
-                      <div class="mt-3 flex items-center">
-                        <div class="flex items-center h-5">
-                          <input
-                            :id="`payment-method-${method.id}`"
-                            :checked="method.enabled"
-                            @change="togglePaymentMethod(method)"
-                            type="checkbox"
-                            class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                          />
-                        </div>
-                        <div class="ml-3 text-sm">
-                          <label :for="`payment-method-${method.id}`" class="font-medium text-gray-700">Enabled</label>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="flex-shrink-0">
-                      <button
-                        type="button"
-                        @click="editPaymentMethod(method)"
-                        class="inline-flex items-center p-1 border border-transparent rounded-full shadow-sm text-indigo-600 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                      >
-                        <Edit class="h-5 w-5" />
-                        <span class="sr-only">Edit</span>
-                      </button>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-  
-        <!-- Add Branch Modal -->
-        <div v-if="showAddBranchModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-10">
-          <div class="bg-white rounded-lg shadow-xl max-w-md w-full animate-fade-in">
-            <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-              <div class="flex items-center justify-between">
-                <h3 class="text-lg font-medium leading-6 text-gray-900">{{ editingBranch ? 'Edit Branch' : 'Add New Branch' }}</h3>
-                <button
-                  type="button"
-                  @click="closeAddBranchModal"
-                  class="rounded-md bg-white text-gray-400 hover:text-gray-500"
-                >
-                  <span class="sr-only">Close</span>
-                  <X class="h-6 w-6" />
-                </button>
-              </div>
-            </div>
-            <form @submit.prevent="saveBranch">
-              <div class="px-4 py-5 sm:p-6 space-y-4">
-                <div>
-                  <label for="branch-name" class="block text-sm font-medium text-gray-700">Branch Name</label>
-                  <input
-                    type="text"
-                    id="branch-name"
-                    v-model="branchForm.name"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    placeholder="Enter branch name"
-                    required
-                  />
                 </div>
                 
-                <div>
-                  <label for="branch-location" class="block text-sm font-medium text-gray-700">Location</label>
-                  <input
-                    type="text"
-                    id="branch-location"
-                    v-model="branchForm.location"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    placeholder="Enter branch location"
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label for="branch-admin" class="block text-sm font-medium text-gray-700">Administrator</label>
-                  <select
-                    id="branch-admin"
-                    v-model="branchForm.adminId"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    required
-                  >
-                    <option value="">Select an administrator</option>
-                    <option v-for="admin in availableAdmins" :key="admin.id" :value="admin.id">
-                      {{ admin.name }}
-                    </option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label for="branch-status" class="block text-sm font-medium text-gray-700">Status</label>
-                  <select
-                    id="branch-status"
-                    v-model="branchForm.status"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    required
-                  >
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label for="branch-description" class="block text-sm font-medium text-gray-700">Description</label>
-                  <textarea
-                    id="branch-description"
-                    v-model="branchForm.description"
-                    rows="3"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    placeholder="Enter branch description"
-                  ></textarea>
-                </div>
-              </div>
-              <div class="px-4 py-3 bg-gray-50 text-right sm:px-6 border-t border-gray-200">
-                <button
-                  type="button"
-                  @click="closeAddBranchModal"
-                  class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mr-3"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                  {{ editingBranch ? 'Update Branch' : 'Add Branch' }}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-  
-        <!-- Add Payment Method Modal -->
-        <div v-if="showAddPaymentMethodModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-10">
-          <div class="bg-white rounded-lg shadow-xl max-w-md w-full animate-fade-in">
-            <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-              <div class="flex items-center justify-between">
-                <h3 class="text-lg font-medium leading-6 text-gray-900">{{ editingPaymentMethod ? 'Edit Payment Method' : 'Add Payment Method' }}</h3>
-                <button
-                  type="button"
-                  @click="closeAddPaymentMethodModal"
-                  class="rounded-md bg-white text-gray-400 hover:text-gray-500"
-                >
-                  <span class="sr-only">Close</span>
-                  <X class="h-6 w-6" />
-                </button>
-              </div>
-            </div>
-            <form @submit.prevent="savePaymentMethod">
-              <div class="px-4 py-5 sm:p-6 space-y-4">
-                <div>
-                  <label for="payment-name" class="block text-sm font-medium text-gray-700">Method Name</label>
-                  <input
-                    type="text"
-                    id="payment-name"
-                    v-model="paymentMethodForm.name"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    placeholder="Enter payment method name"
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label for="payment-type" class="block text-sm font-medium text-gray-700">Type</label>
-                  <select
-                    id="payment-type"
-                    v-model="paymentMethodForm.type"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    required
-                  >
-                    <option value="card">Credit/Debit Card</option>
-                    <option value="bank">Bank Transfer</option>
-                    <option value="mobile">Mobile Money</option>
-                    <option value="cash">Cash</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label for="payment-description" class="block text-sm font-medium text-gray-700">Description</label>
-                  <textarea
-                    id="payment-description"
-                    v-model="paymentMethodForm.description"
-                    rows="2"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    placeholder="Enter description"
-                  ></textarea>
-                </div>
-                
-                <div>
-                  <div class="flex items-center">
-                    <div class="flex items-center h-5">
-                      <input
-                        id="payment-enabled"
-                        v-model="paymentMethodForm.enabled"
-                        type="checkbox"
-                        class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                      />
-                    </div>
-                    <div class="ml-3 text-sm">
-                      <label for="payment-enabled" class="font-medium text-gray-700">Enable this payment method</label>
-                    </div>
+                <div class="profile-item">
+                  <div class="profile-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-phone"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  </div>
+                  <div>
+                    <p class="text-sm text-gray-500">Phone</p>
+                    <p class="text-gray-800">{{ church?.phoneNumber || 'Not provided' }}</p>
                   </div>
                 </div>
-              </div>
-              <div class="px-4 py-3 bg-gray-50 text-right sm:px-6 border-t border-gray-200">
-                <button
-                  type="button"
-                  @click="closeAddPaymentMethodModal"
-                  class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mr-3"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                  {{ editingPaymentMethod ? 'Update Method' : 'Add Method' }}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-  
-        <!-- Delete Branch Confirmation Modal -->
-        <div v-if="showDeleteBranchModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-10">
-          <div class="bg-white rounded-lg shadow-xl max-w-md w-full animate-fade-in">
-            <div class="px-4 py-5 sm:p-6">
-              <div class="sm:flex sm:items-start">
-                <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                  <AlertTriangle class="h-6 w-6 text-red-600" aria-hidden="true" />
-                </div>
-                <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                  <h3 class="text-base font-semibold leading-6 text-gray-900">Delete Branch</h3>
-                  <div class="mt-2">
-                    <p class="text-sm text-gray-500">
-                      Are you sure you want to delete this branch? This action cannot be undone.
+                
+                <div class="profile-item">
+                  <div class="profile-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
+                  </div>
+                  <div>
+                    <p class="text-sm text-gray-500">Website</p>
+                    <p class="text-gray-800">
+                      <a v-if="church?.website" :href="church?.website" target="_blank" class="text-purple-600 hover:underline">
+                        {{ church?.website }}
+                      </a>
+                      <span v-else>Not provided</span>
                     </p>
                   </div>
                 </div>
               </div>
-              <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                <button
-                  type="button"
-                  @click="deleteBranch"
-                  class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                >
-                  Delete
-                </button>
-                <button
-                  type="button"
-                  @click="showDeleteBranchModal = false"
-                  class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                >
-                  Cancel
-                </button>
+              
+              <div class="space-y-4 slide-in-right">
+                <div class="profile-item">
+                  <div class="profile-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                  </div>
+                  <div>
+                    <p class="text-sm text-gray-500">Address</p>
+                    <p class="text-gray-800">
+                      <template v-if="church?.address">
+                        {{ church?.address }}<br>
+                        {{ [church.city, church.state].filter(Boolean).join(', ') }} {{ church?.postalCode || '' }}<br>
+                        {{ church?.country || '' }}
+                      </template>
+                      <template v-else>
+                        Not provided
+                      </template>
+                    </p>
+                  </div>
+                </div>
+                
+                <div class="profile-item">
+                  <div class="profile-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+                  </div>
+                  <div>
+                    <p class="text-sm text-gray-500">Created</p>
+                    <p class="text-gray-800">{{ formatDate(church?.createdAt) }}</p>
+                  </div>
+                </div>
+                
+                <div class="profile-item">
+                  <div class="profile-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-activity"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                  </div>
+                  <div>
+                    <p class="text-sm text-gray-500">Status</p>
+                    <p class="text-gray-800">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize" 
+                        :class="church?.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'">
+                        {{ church?.status }}
+                      </span>
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-  
-        <!-- Success Notification -->
-        <div v-if="showSuccessNotification" class="fixed bottom-0 right-0 m-6 bg-green-50 p-4 rounded-md shadow-lg animate-fade-in z-20">
-          <div class="flex">
-            <div class="flex-shrink-0">
-              <CheckCircle class="h-5 w-5 text-green-400" aria-hidden="true" />
+
+        <!-- Financial Config Card -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden fade-in">
+          <div class="p-6 bg-gradient-to-r from-purple-600 to-purple-400">
+            <div class="flex justify-between items-center">
+              <h3 class="text-xl font-bold text-white">Financial Configuration</h3>
+              <button 
+                @click="openFinancialModal" 
+                class="p-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-all duration-300 transform hover:scale-105"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
             </div>
-            <div class="ml-3">
-              <p class="text-sm font-medium text-green-800">{{ successMessage }}</p>
+          </div>
+          
+          <div class="p-6 slide-in-bottom">
+            <div v-if="church?.financialConfig" class="space-y-6">
+              <div class="financial-item">
+                <div class="financial-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-coins"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></svg>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-500">Currency</p>
+                  <p class="text-gray-800 font-medium">{{ church?.financialConfig?.currency }}</p>
+                </div>
+              </div>
+              
+              <div class="financial-item">
+                <div class="financial-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-days"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-500">Fiscal Year Start</p>
+                  <p class="text-gray-800 font-medium">{{ formatFiscalDate(church?.financialConfig?.fiscalYearStart) }}</p>
+                </div>
+              </div>
+              
+              <div class="financial-item">
+                <div class="financial-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-credit-card"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-500">Payment Methods</p>
+                  <div class="flex flex-wrap gap-2 mt-1">
+                    <span v-for="method in church?.financialConfig?.paymentMethods" :key="method" 
+                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize bg-purple-100 text-purple-800">
+                      {{ formatPaymentMethod(method) }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="space-y-2">
+                <p class="text-sm text-gray-500">Bank Accounts</p>
+                <div v-for="(account, index) in church?.financialConfig?.bankAccounts" :key="index" 
+                  class="p-3 bg-purple-50 rounded-lg border border-purple-100 hover:shadow-md transition-shadow">
+                  <p class="font-medium text-gray-800">{{ account?.name }}</p>
+                  <p class="text-sm text-gray-600">{{ account?.bankName }}</p>
+                  <p class="text-sm text-gray-500">Acc: •••• {{ maskAccountNumber(account?.accountNumber) }}</p>
+                </div>
+              </div>
+              
+              <div class="space-y-2">
+                <p class="text-sm text-gray-500">Donation Categories</p>
+                <div v-for="(category, index) in church?.financialConfig?.donationCategories" :key="index" 
+                  class="p-3 bg-purple-50 rounded-lg border border-purple-100 hover:shadow-md transition-shadow">
+                  <div class="flex justify-between">
+                    <p class="font-medium text-gray-800">{{ category?.name }}</p>
+                    <span v-if="category?.isDefault" 
+                      class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                      Default
+                    </span>
+                  </div>
+                  <p class="text-sm text-gray-600">{{ category?.description }}</p>
+                </div>
+              </div>
             </div>
-            <div class="ml-auto pl-3">
-              <div class="-mx-1.5 -my-1.5">
-                <button
-                  type="button"
-                  @click="showSuccessNotification = false"
-                  class="inline-flex rounded-md bg-green-50 p-1.5 text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50"
-                >
-                  <span class="sr-only">Dismiss</span>
-                  <X class="h-5 w-5" aria-hidden="true" />
-                </button>
+            
+            <div v-else class="py-8 text-center">
+              <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-purple-100 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wallet text-purple-600"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+              </div>
+              <h4 class="text-lg font-medium text-gray-800">No Financial Configuration</h4>
+              <p class="text-gray-500 mb-4">Set up your church's financial details</p>
+              <button 
+                @click="openFinancialModal" 
+                class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow transition-all duration-300 transform hover:scale-105"
+              >
+                Configure Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Branches Section -->
+      <div class="mt-8 bg-white rounded-2xl shadow-xl overflow-hidden fade-in">
+        <div class="p-6 bg-gradient-to-r from-purple-600 to-purple-400">
+          <h3 class="text-xl font-bold text-white">Church Branches</h3>
+        </div>
+        
+        <div class="p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div v-for="branch in church?.branches" :key="branch?.id" 
+              class="p-4 border border-purple-100 rounded-lg hover:shadow-md transition-shadow bg-white slide-in-up">
+              <div class="flex items-start justify-between">
+                <div>
+                  <h4 class="font-medium text-gray-800">{{ branch?.name }}</h4>
+                  <p v-if="branch?.isHeadquarters" class="text-sm text-purple-600">Headquarters</p>
+                </div>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize" 
+                  :class="branch?.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'">
+                  {{ branch?.status }}
+                </span>
+              </div>
+              
+              <div class="mt-3 space-y-2">
+                <p v-if="branch?.email" class="text-sm text-gray-600 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail mr-2 text-gray-400"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                  {{ branch?.email }}
+                </p>
+                <p v-if="branch.phoneNumber" class="text-sm text-gray-600 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-phone mr-2 text-gray-400"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  {{ branch?.phoneNumber }}
+                </p>
+                <p v-if="branch?.address" class="text-sm text-gray-600 flex items-start">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin mr-2 text-gray-400 mt-0.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                  <span>
+                    {{ branch?.address }}<br v-if="branch?.address">
+                    {{ [branch.city, branch.state].filter(Boolean).join(', ') }} {{ branch?.postalCode || '' }}<br v-if="branch?.city || branch?.state">
+                    {{ branch?.country || '' }}
+                  </span>
+                </p>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </main>
-  </template>
-  
-  <script setup lang="ts">
-  import { ref, reactive } from 'vue';
-  import {
-    Building2,
-    Save,
-    Plus,
-    Edit,
-    Trash2,
-    X,
-    UserPlus,
-    AlertTriangle,
-    CheckCircle,
-    Mail,
-    Phone,
-    CreditCard,
-    DollarSign,
-    Smartphone,
-    Wallet
-  } from 'lucide-vue-next';
+    </div>
 
-  definePageMeta({
+    <!-- Profile Update Modal -->
+    <div v-if="showProfileModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 modal-animation">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-auto" @click.stop>
+        <div class="p-6 border-b border-gray-200">
+          <div class="flex justify-between items-center">
+            <h3 class="text-xl font-bold text-gray-800">Update Church Profile</h3>
+            <button @click="showProfileModal = false" class="text-gray-500 hover:text-gray-700">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+        </div>
+        
+        <div class="p-6">
+          <form @submit.prevent="updateProfile">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div class="col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Church Name</label>
+                <input 
+                  v-model="profileForm.name" 
+                  type="text" 
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="Church name"
+                  required
+                />
+              </div>
+              
+              <div class="col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea 
+                  v-model="profileForm.description" 
+                  rows="3"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="A brief description of your church"
+                ></textarea>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input 
+                  v-model="profileForm.email" 
+                  type="email" 
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="contact@church.com"
+                />
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                <input 
+                  v-model="profileForm.phoneNumber" 
+                  type="tel" 
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="+1234567890"
+                />
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                <input 
+                  v-model="profileForm.website" 
+                  type="url" 
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="https://yourchurch.com"
+                />
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                <input 
+                  v-model="profileForm.address" 
+                  type="text" 
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="123 Main St"
+                />
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                <input 
+                  v-model="profileForm.city" 
+                  type="text" 
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="Anytown"
+                />
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">State/Province</label>
+                <input 
+                  v-model="profileForm.state" 
+                  type="text" 
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="CA"
+                />
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                <input 
+                  v-model="profileForm.country" 
+                  type="text" 
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="USA"
+                />
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
+                <input 
+                  v-model="profileForm.postalCode" 
+                  type="text" 
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="12345"
+                />
+              </div>
+            </div>
+            
+            <div class="flex justify-end gap-3 border-t border-gray-200 pt-4">
+              <button 
+                type="button" 
+                @click="showProfileModal = false"
+                class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                type="submit"
+                :disabled="isUpdating"
+                class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow transition-all duration-300 flex items-center"
+                :class="{ 'opacity-70': isUpdating }"
+              >
+                <span v-if="isUpdating" class="mr-2">
+                  <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </span>
+                {{ isUpdating ? 'Updating...' : 'Update Profile' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Financial Config Modal -->
+    <div v-if="showFinancialModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 modal-animation">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-auto" @click.stop>
+        <div class="p-6 border-b border-gray-200">
+          <div class="flex justify-between items-center">
+            <h3 class="text-xl font-bold text-gray-800">Update Financial Configuration</h3>
+            <button @click="showFinancialModal = false" class="text-gray-500 hover:text-gray-700">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+        </div>
+        
+        <div class="p-6">
+          <form @submit.prevent="handleUpdateFinancialConfig">
+            <div class="space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Currency</label>
+                  <select 
+                    v-model="financialForm.currency" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  >
+                    <option value="USD">USD - US Dollar</option>
+                    <option value="EUR">EUR - Euro</option>
+                    <option value="GBP">GBP - British Pound</option>
+                    <option value="CAD">CAD - Canadian Dollar</option>
+                    <option value="AUD">AUD - Australian Dollar</option>
+                    <option value="NGN">NGN - Nigerian Naira</option>
+                    <option value="GHS">GHS - Ghanaian Cedi</option>
+                    <option value="KES">KES - Kenyan Shilling</option>
+                    <option value="ZAR">ZAR - South African Rand</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Fiscal Year Start (MM-DD)</label>
+                  <input 
+                    v-model="financialForm.fiscalYearStart" 
+                    type="text" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="01-01"
+                    pattern="[0-1][0-9]-[0-3][0-9]"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Payment Methods</label>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <label class="flex items-center space-x-2 p-2 border border-gray-200 rounded-lg hover:bg-purple-50 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      value="cash" 
+                      v-model="financialForm.paymentMethods"
+                      class="rounded text-purple-600 focus:ring-purple-500"
+                    />
+                    <span>Cash</span>
+                  </label>
+                  <label class="flex items-center space-x-2 p-2 border border-gray-200 rounded-lg hover:bg-purple-50 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      value="check" 
+                      v-model="financialForm.paymentMethods"
+                      class="rounded text-purple-600 focus:ring-purple-500"
+                    />
+                    <span>Check</span>
+                  </label>
+                  <label class="flex items-center space-x-2 p-2 border border-gray-200 rounded-lg hover:bg-purple-50 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      value="card" 
+                      v-model="financialForm.paymentMethods"
+                      class="rounded text-purple-600 focus:ring-purple-500"
+                    />
+                    <span>Card</span>
+                  </label>
+                  <label class="flex items-center space-x-2 p-2 border border-gray-200 rounded-lg hover:bg-purple-50 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      value="bank_transfer" 
+                      v-model="financialForm.paymentMethods"
+                      class="rounded text-purple-600 focus:ring-purple-500"
+                    />
+                    <span>Bank Transfer</span>
+                  </label>
+                </div>
+              </div>
+              
+              <!-- Bank Accounts -->
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <label class="block text-sm font-medium text-gray-700">Bank Accounts</label>
+                  <button 
+                    type="button" 
+                    @click="addBankAccount"
+                    class="text-sm text-purple-600 hover:text-purple-800 flex items-center"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-circle mr-1"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+                    Add Account
+                  </button>
+                </div>
+                
+                <div v-for="(account, index) in financialForm.bankAccounts" :key="index" class="p-3 border border-gray-200 rounded-lg mb-3">
+                  <div class="flex justify-between items-start mb-2">
+                    <h4 class="font-medium">Bank Account #{{ index + 1 }}</h4>
+                    <button 
+                      type="button" 
+                      @click="removeBankAccount(index)"
+                      class="text-red-500 hover:text-red-700"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                    </button>
+                  </div>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                      <label class="block text-xs text-gray-500 mb-1">Account Name</label>
+                      <input 
+                        v-model="account.name" 
+                        type="text" 
+                        class="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="Main Account"
+                      />
+                    </div>
+                    <div>
+                      <label class="block text-xs text-gray-500 mb-1">Bank Name</label>
+                      <input 
+                        v-model="account.bankName" 
+                        type="text" 
+                        class="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="First National Bank"
+                      />
+                    </div>
+                    <div>
+                      <label class="block text-xs text-gray-500 mb-1">Account Number</label>
+                      <input 
+                        v-model="account.accountNumber" 
+                        type="text" 
+                        class="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="1234567890"
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                <div v-if="financialForm.bankAccounts.length === 0" class="text-center py-4 border border-dashed border-gray-300 rounded-lg">
+                  <p class="text-gray-500">No bank accounts added</p>
+                  <button 
+                    type="button" 
+                    @click="addBankAccount"
+                    class="mt-2 text-sm text-purple-600 hover:text-purple-800 flex items-center justify-center mx-auto"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-circle mr-1"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+                    Add Account
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Donation Categories -->
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <label class="block text-sm font-medium text-gray-700">Donation Categories</label>
+                  <button 
+                    type="button" 
+                    @click="addDonationCategory"
+                    class="text-sm text-purple-600 hover:text-purple-800 flex items-center"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-circle mr-1"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+                    Add Category
+                  </button>
+                </div>
+                
+                <div v-for="(category, index) in financialForm.donationCategories" :key="index" class="p-3 border border-gray-200 rounded-lg mb-3">
+                  <div class="flex justify-between items-start mb-2">
+                    <h4 class="font-medium">Category #{{ index + 1 }}</h4>
+                    <button 
+                      type="button" 
+                      @click="removeDonationCategory(index)"
+                      class="text-red-500 hover:text-red-700"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                    </button>
+                  </div>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label class="block text-xs text-gray-500 mb-1">Category Name</label>
+                      <input 
+                        v-model="category.name" 
+                        type="text" 
+                        class="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="Tithe"
+                      />
+                    </div>
+                    <div>
+                      <label class="block text-xs text-gray-500 mb-1">Description</label>
+                      <input 
+                        v-model="category.description" 
+                        type="text" 
+                        class="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="Regular tithe"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div class="mt-2">
+                    <label class="flex items-center space-x-2">
+                      <input 
+                        type="checkbox" 
+                        v-model="category.isDefault"
+                        class="rounded text-purple-600 focus:ring-purple-500"
+                      />
+                      <span class="text-sm">Set as default category</span>
+                    </label>
+                  </div>
+                </div>
+                
+                <div v-if="financialForm.donationCategories.length === 0" class="text-center py-4 border border-dashed border-gray-300 rounded-lg">
+                  <p class="text-gray-500">No donation categories added</p>
+                  <button 
+                    type="button" 
+                    @click="addDonationCategory"
+                    class="mt-2 text-sm text-purple-600 hover:text-purple-800 flex items-center justify-center mx-auto"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-circle mr-1"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+                    Add Category
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex justify-end gap-3 border-t border-gray-200 pt-4 mt-6">
+              <button 
+                type="button" 
+                @click="showFinancialModal = false"
+                class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                type="submit"
+                :disabled="isUpdating"
+                class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow transition-all duration-300 flex items-center"
+                :class="{ 'opacity-70': isUpdating }"
+              >
+                <span v-if="isUpdating" class="mr-2">
+                  <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </span>
+                {{ isUpdating ? 'Updating...' : 'Update Configuration' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Toast -->
+    <!-- <div v-if="showToast" class="fixed bottom-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg toast-animation z-50">
+      <div class="flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-circle mr-3"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+        <span>{{ toastMessage }}</span>
+      </div>
+    </div> -->
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, reactive, onMounted, computed } from 'vue'
+import { useGetChurchProfile } from "@/composables/modules/church/useGetChurchProfile"
+import { useUpdateChurchProfile } from "@/composables/modules/church/useUpdateChurchProfile"
+import { useUpdateFinancialConfig } from "@/composables/modules/church/useUpdateFinancialConfig"
+
+const { churchProfile: church, loading } = useGetChurchProfile()
+const { updateChurchProfile, loading: updating } = useUpdateChurchProfile()
+const { updateFinancialConfig, loading: updatingFinancialConfig } = useUpdateFinancialConfig()
+
+// Types
+interface BankAccount {
+  name: string
+  accountNumber: string
+  bankName: string
+}
+
+interface DonationCategory {
+  name: string
+  description: string
+  isDefault: boolean
+}
+
+interface FinancialConfig {
+  currency: string
+  fiscalYearStart: string
+  bankAccounts: BankAccount[]
+  paymentMethods: string[]
+  donationCategories: DonationCategory[]
+}
+
+interface Branch {
+  id: string
+  churchId: string
+  name: string
+  code: string | null
+  address: string | null
+  city: string | null
+  state: string | null
+  country: string | null
+  postalCode: string | null
+  email: string | null
+  phoneNumber: string | null
+  isHeadquarters: boolean
+  parentBranchId: string | null
+  remittanceConfig: any | null
+  status: string
+  createdAt: string
+  updatedAt: string
+  deletedAt: string | null
+}
+
+interface Church {
+  id: string
+  name: string
+  logo: string | null
+  address: string | null
+  city: string | null
+  state: string | null
+  country: string | null
+  postalCode: string | null
+  email: string
+  phoneNumber: string | null
+  website: string | null
+  description: string | null
+  financialConfig: FinancialConfig | null
+  status: string
+  createdAt: string
+  updatedAt: string
+  deletedAt: string | null
+  branches: Branch[]
+}
+
+// State
+const isLoading = ref(true)
+const isUpdating = ref(false)
+const showProfileModal = ref(false)
+const showFinancialModal = ref(false)
+const showToast = ref(false)
+const toastMessage = ref('')
+
+// Sample church data (would normally come from API)
+// const church = reactive<Church>({
+//   id: "a44252bb-23c6-441e-884d-fb3906966a64",
+//   name: "Test church",
+//   logo: null,
+//   address: null,
+//   city: null,
+//   state: null,
+//   country: null,
+//   postalCode: null,
+//   email: "debbie1@gmail.com",
+//   phoneNumber: null,
+//   website: null,
+//   description: null,
+//   financialConfig: null,
+//   status: "active",
+//   createdAt: "2025-05-20T08:12:22.845Z",
+//   updatedAt: "2025-05-20T08:12:22.845Z",
+//   deletedAt: null,
+//   branches: [
+//     {
+//       id: "655be853-9c09-402a-8abd-dc5af789abbc",
+//       churchId: "a44252bb-23c6-441e-884d-fb3906966a64",
+//       name: "Headquarters",
+//       code: null,
+//       address: null,
+//       city: null,
+//       state: null,
+//       country: null,
+//       postalCode: null,
+//       email: null,
+//       phoneNumber: null,
+//       isHeadquarters: true,
+//       parentBranchId: null,
+//       remittanceConfig: null,
+//       status: "active",
+//       createdAt: "2025-05-20T08:12:22.869Z",
+//       updatedAt: "2025-05-20T08:12:22.869Z",
+//       deletedAt: null
+//     }
+//   ]
+// })
+
+// Form state
+const profileForm = reactive({
+  name: "",
+  address: "",
+  city: "",
+  state: "",
+  country: "",
+  postalCode: "",
+  email: "",
+  phoneNumber: "",
+  website: "",
+  description: ""
+})
+
+const financialForm = reactive<FinancialConfig>({
+  currency: "USD",
+  fiscalYearStart: "01-01",
+  bankAccounts: [],
+  paymentMethods: [],
+  donationCategories: []
+})
+
+// Methods
+const getInitials = (name: string): string => {
+  if (!name) return "?"
+  return name
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase())
+    .join('')
+    .substring(0, 2)
+}
+
+const formatDate = (dateString: string): string => {
+  if (!dateString) return "N/A"
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'short', 
+    day: 'numeric' 
+  })
+}
+
+const formatFiscalDate = (fiscalDate: string): string => {
+  if (!fiscalDate) return "January 1"
+  
+  const [month, day] = fiscalDate.split('-').map(Number)
+  const date = new Date(2000, month - 1, day)
+  
+  return date.toLocaleDateString('en-US', { 
+    month: 'long', 
+    day: 'numeric' 
+  })
+}
+
+const formatPaymentMethod = (method: string): string => {
+  return method.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
+}
+
+const maskAccountNumber = (accountNumber: string): string => {
+  if (!accountNumber) return ""
+  return accountNumber.slice(-4)
+}
+
+const openProfileModal = () => {
+  // Populate form with current values
+  profileForm.name = church?.value?.name
+  profileForm.address = church?.value?.address || ""
+  profileForm.city = church?.value?.city || ""
+  profileForm.state = church?.value?.state || ""
+  profileForm.country = church?.value?.country || ""
+  profileForm.postalCode = church?.value?.postalCode || ""
+  profileForm.email = church?.value?.email
+  profileForm.phoneNumber = church?.value?.phoneNumber || ""
+  profileForm.website = church?.value?.website || ""
+  profileForm.description = church?.value?.description || ""
+  
+  showProfileModal.value = true
+}
+
+const openFinancialModal = () => {
+  // Populate form with current values or defaults
+  if (church?.value?.financialConfig) {
+    financialForm.currency = church?.value?.financialConfig?.currency
+    financialForm.fiscalYearStart = church?.value?.financialConfig?.fiscalYearStart
+    financialForm.bankAccounts = JSON.parse(JSON.stringify(church?.value?.financialConfig?.bankAccounts))
+    financialForm.paymentMethods = [...church.financialConfig.paymentMethods]
+    financialForm.donationCategories = JSON.parse(JSON.stringify(church?.value?.financialConfig?.donationCategories))
+  } else {
+    // Default values
+    financialForm.currency = "USD"
+    financialForm.fiscalYearStart = "01-01"
+    financialForm.bankAccounts = []
+    financialForm.paymentMethods = ["cash"]
+    financialForm.donationCategories = [
+      {
+        name: "Tithe",
+        description: "Regular tithe",
+        isDefault: true
+      }
+    ]
+  }
+  
+  showFinancialModal.value = true
+}
+
+const addBankAccount = () => {
+  financialForm.bankAccounts.push({
+    name: "",
+    accountNumber: "",
+    bankName: ""
+  })
+}
+
+const removeBankAccount = (index: number) => {
+  financialForm.bankAccounts.splice(index, 1)
+}
+
+const addDonationCategory = () => {
+  financialForm.donationCategories.push({
+    name: "",
+    description: "",
+    isDefault: false
+  })
+}
+
+const removeDonationCategory = (index: number) => {
+  financialForm.donationCategories.splice(index, 1)
+}
+
+const updateProfile = async () => {
+  try {
+    isUpdating.value = true
+    
+    // Simulate API call
+    await updateChurchProfile(profileForm).then(() => {
+    // await new Promise(resolve => setTimeout(resolve, 1500))
+    
+    // Update local state
+    Object.assign(church, profileForm)
+    
+    showProfileModal.value = false
+    // showToast("Church profile updated successfully!")
+    })
+  } catch (error) {
+    console.error("Error updating profile:", error)
+    // showToast("Failed to update profile. Please try again.", false)
+  } finally {
+    isUpdating.value = false
+  }
+}
+
+const handleUpdateFinancialConfig = async () => {
+  try {
+    isUpdating.value = true
+    
+    // Simulate API call
+    // await new Promise(resolve => setTimeout(resolve, 1500))
+    await updateFinancialConfig(financialForm).then(() => {
+    // church?.value?.financialConfig = JSON.parse(JSON.stringify(financialForm))
+    showFinancialModal.value = false
+    // showToast("Financial configuration updated successfully!")
+    })
+  } catch (error) {
+    console.error("Error updating financial config:", error)
+    // showToast("Failed to update financial configuration. Please try again.", false)
+  } finally {
+    isUpdating.value = false
+  }
+}
+
+// const showToastFunc = (message: string, success = true) => {
+//   toastMessage.value = message
+//   showToast.value = true
+  
+//   setTimeout(() => {
+//     showToast.value = false
+//   }, 3000)
+// }
+
+// Lifecycle hooks
+onMounted(async () => {
+  // Simulate loading data
+  await new Promise(resolve => setTimeout(resolve, 1500))
+  isLoading.value = false
+})
+
+definePageMeta({
     layout: 'dashboard'
-  })
-  
-  // Tab state
-  const activeTab = ref('general');
-  
-  // Modal states
-  const showAddBranchModal = ref(false);
-  const showAddPaymentMethodModal = ref(false);
-  const showDeleteBranchModal = ref(false);
-  const showSuccessNotification = ref(false);
-  const successMessage = ref('');
-  const editingBranch = ref(false);
-  const editingPaymentMethod = ref(false);
-  const selectedBranchId = ref<number | null>(null);
-  const selectedPaymentMethodId = ref<number | null>(null);
-  
-  // Church profile data
-  const churchProfile = reactive({
-    name: 'Grace Community Church',
-    denomination: 'Non-denominational',
-    email: 'info@gracechurch.org',
-    phone: '+1 (555) 123-4567',
-    logo: 'https://randomuser.me/api/portraits/lego/1.jpg',
-    website: 'https://www.gracechurch.org',
-    description: 'A welcoming community of believers dedicated to serving God and our neighbors.',
-    address: {
-      street: '123 Main Street',
-      city: 'Anytown',
-      state: 'CA',
-      postalCode: '12345',
-      country: 'United States'
-    }
-  });
-  
-  // Branch data
-  const branches = ref([
-    {
-      id: 1,
-      name: 'Main Campus',
-      location: 'Downtown, Anytown',
-      adminId: 1,
-      adminName: 'John Doe',
-      adminAvatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-      status: 'active',
-      description: 'Our main church campus with full facilities.'
-    },
-    {
-      id: 2,
-      name: 'North Campus',
-      location: 'North Anytown',
-      adminId: 2,
-      adminName: 'Jane Smith',
-      adminAvatar: 'https://randomuser.me/api/portraits/women/2.jpg',
-      status: 'active',
-      description: 'Satellite campus serving the northern community.'
-    },
-    {
-      id: 3,
-      name: 'South Campus',
-      location: 'South Anytown',
-      adminId: 3,
-      adminName: 'Robert Johnson',
-      adminAvatar: 'https://randomuser.me/api/portraits/men/3.jpg',
-      status: 'active',
-      description: 'Satellite campus serving the southern community.'
-    },
-    {
-      id: 4,
-      name: 'East Campus',
-      location: 'East Anytown',
-      adminId: 4,
-      adminName: 'Emily Davis',
-      adminAvatar: 'https://randomuser.me/api/portraits/women/4.jpg',
-      status: 'active',
-      description: 'Satellite campus serving the eastern community.'
-    },
-    {
-      id: 5,
-      name: 'West Campus',
-      location: 'West Anytown',
-      adminId: 5,
-      adminName: 'Michael Wilson',
-      adminAvatar: 'https://randomuser.me/api/portraits/men/5.jpg',
-      status: 'inactive',
-      description: 'Satellite campus serving the western community (under construction).'
-    }
-  ]);
-  
-  // Branch admins data
-  const branchAdmins = ref([
-    {
-      id: 1,
-      name: 'John Doe',
-      role: 'Super Admin',
-      branch: 'Main Campus',
-      avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-      email: 'john@example.com',
-      phone: '+1 (555) 111-2222'
-    },
-    {
-      id: 2,
-      name: 'Jane Smith',
-      role: 'Branch Admin',
-      branch: 'North Campus',
-      avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
-      email: 'jane@example.com',
-      phone: '+1 (555) 222-3333'
-    },
-    {
-      id: 3,
-      name: 'Robert Johnson',
-      role: 'Branch Admin',
-      branch: 'South Campus',
-      avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
-      email: 'robert@example.com',
-      phone: '+1 (555) 333-4444'
-    },
-    {
-      id: 4,
-      name: 'Emily Davis',
-      role: 'Branch Admin',
-      branch: 'East Campus',
-      avatar: 'https://randomuser.me/api/portraits/women/4.jpg',
-      email: 'emily@example.com',
-      phone: '+1 (555) 444-5555'
-    },
-    {
-      id: 5,
-      name: 'Michael Wilson',
-      role: 'Branch Admin',
-      branch: 'West Campus',
-      avatar: 'https://randomuser.me/api/portraits/men/5.jpg',
-      email: 'michael@example.com',
-      phone: '+1 (555) 555-6666'
-    }
-  ]);
-  
-  // Financial configuration data
-  const financialConfig = reactive({
-    bankName: 'First National Bank',
-    accountNumber: '1234567890',
-    accountName: 'Grace Community Church',
-    routingNumber: '987654321',
-    taxId: '12-3456789',
-    currency: 'USD'
-  });
-  
-  // Payment methods data
-  const paymentMethods = ref([
-    {
-      id: 1,
-      name: 'Credit/Debit Card',
-      type: 'card',
-      description: 'Accept Visa, Mastercard, and American Express',
-      enabled: true,
-      icon: CreditCard
-    },
-    {
-      id: 2,
-      name: 'Bank Transfer',
-      type: 'bank',
-      description: 'Direct bank transfers and ACH payments',
-      enabled: true,
-      icon: DollarSign
-    },
-    {
-      id: 3,
-      name: 'Mobile Money',
-      type: 'mobile',
-      description: 'Mobile payment services',
-      enabled: false,
-      icon: Smartphone
-    },
-    {
-      id: 4,
-      name: 'Cash',
-      type: 'cash',
-      description: 'In-person cash donations',
-      enabled: true,
-      icon: Wallet
-    }
-  ]);
-  
-  // Form states
-  const branchForm = reactive({
-    id: 0,
-    name: '',
-    location: '',
-    adminId: '',
-    status: 'active',
-    description: ''
-  });
-  
-  const paymentMethodForm = reactive({
-    id: 0,
-    name: '',
-    type: 'card',
-    description: '',
-    enabled: true
-  });
-  
-  // Computed properties
-  const availableAdmins = computed(() => {
-    return branchAdmins.value.filter(admin => {
-      // If editing, allow the current admin to be selected
-      if (editingBranch.value && selectedBranchId.value) {
-        const branch = branches.value.find(b => b.id === selectedBranchId.value);
-        if (branch && branch.adminId === admin.id) {
-          return true;
-        }
-      }
-      
-      // Check if admin is already assigned to a branch
-      const isAssigned = branches.value.some(branch => branch.adminId === admin.id);
-      return !isAssigned;
-    });
-  });
-  
-  // Methods
-  const saveProfile = () => {
-    // In a real app, this would save to a backend
-    showSuccessNotification.value = true;
-    successMessage.value = 'Church profile updated successfully!';
-    
-    // Auto-hide notification after 3 seconds
-    setTimeout(() => {
-      showSuccessNotification.value = false;
-    }, 3000);
-  };
-  
-  const editBranch = (branch: any) => {
-    selectedBranchId.value = branch.id;
-    branchForm.id = branch.id;
-    branchForm.name = branch.name;
-    branchForm.location = branch.location;
-    branchForm.adminId = branch.adminId.toString();
-    branchForm.status = branch.status;
-    branchForm.description = branch.description;
-    
-    editingBranch.value = true;
-    showAddBranchModal.value = true;
-  };
-  
-  const assignAdmin = (branch: any) => {
-    selectedBranchId.value = branch.id;
-    branchForm.id = branch.id;
-    branchForm.name = branch.name;
-    branchForm.location = branch.location;
-    branchForm.adminId = '';
-    branchForm.status = branch.status;
-    branchForm.description = branch.description;
-    
-    editingBranch.value = true;
-    showAddBranchModal.value = true;
-  };
-  
-  const confirmDeleteBranch = (branch: any) => {
-    selectedBranchId.value = branch.id;
-    showDeleteBranchModal.value = true;
-  };
-  
-  const deleteBranch = () => {
-    if (selectedBranchId.value) {
-      branches.value = branches.value.filter(b => b.id !== selectedBranchId.value);
-      showDeleteBranchModal.value = false;
-      
-      showSuccessNotification.value = true;
-      successMessage.value = 'Branch deleted successfully!';
-      
-      // Auto-hide notification after 3 seconds
-      setTimeout(() => {
-        showSuccessNotification.value = false;
-      }, 3000);
-    }
-  };
-  
-  const closeAddBranchModal = () => {
-    showAddBranchModal.value = false;
-    editingBranch.value = false;
-    selectedBranchId.value = null;
-    
-    // Reset form
-    branchForm.id = 0;
-    branchForm.name = '';
-    branchForm.location = '';
-    branchForm.adminId = '';
-    branchForm.status = 'active';
-    branchForm.description = '';
-  };
-  
-  const saveBranch = () => {
-    const adminObj = branchAdmins.value.find(a => a.id.toString() === branchForm.adminId);
-    
-    if (editingBranch.value && selectedBranchId.value) {
-      // Update existing branch
-      const index = branches.value.findIndex(b => b.id === selectedBranchId.value);
-      if (index !== -1) {
-        branches.value[index] = {
-          id: selectedBranchId.value,
-          name: branchForm.name,
-          location: branchForm.location,
-          adminId: adminObj ? adminObj.id : 0,
-          adminName: adminObj ? adminObj.name : 'Unassigned',
-          adminAvatar: adminObj ? adminObj.avatar : '',
-          status: branchForm.status,
-          description: branchForm.description
-        };
-      }
-      
-      successMessage.value = 'Branch updated successfully!';
-    } else {
-      // Create new branch
-      const newId = Math.max(0, ...branches.value.map(b => b.id)) + 1;
-      branches.value.push({
-        id: newId,
-        name: branchForm.name,
-        location: branchForm.location,
-        adminId: adminObj ? adminObj.id : 0,
-        adminName: adminObj ? adminObj.name : 'Unassigned',
-        adminAvatar: adminObj ? adminObj.avatar : '',
-        status: branchForm.status,
-        description: branchForm.description
-      });
-      
-      successMessage.value = 'Branch added successfully!';
-    }
-    
-    showSuccessNotification.value = true;
-    
-    // Auto-hide notification after 3 seconds
-    setTimeout(() => {
-      showSuccessNotification.value = false;
-    }, 3000);
-    
-    closeAddBranchModal();
-  };
-  
-  const editPaymentMethod = (method: any) => {
-    selectedPaymentMethodId.value = method.id;
-    paymentMethodForm.id = method.id;
-    paymentMethodForm.name = method.name;
-    paymentMethodForm.type = method.type;
-    paymentMethodForm.description = method.description;
-    paymentMethodForm.enabled = method.enabled;
-    
-    editingPaymentMethod.value = true;
-    showAddPaymentMethodModal.value = true;
-  };
-  
-  const closeAddPaymentMethodModal = () => {
-    showAddPaymentMethodModal.value = false;
-    editingPaymentMethod.value = false;
-    selectedPaymentMethodId.value = null;
-    
-    // Reset form
-    paymentMethodForm.id = 0;
-    paymentMethodForm.name = '';
-    paymentMethodForm.type = 'card';
-    paymentMethodForm.description = '';
-    paymentMethodForm.enabled = true;
-  };
-  
-  const savePaymentMethod = () => {
-    let iconComponent;
-    switch (paymentMethodForm.type) {
-      case 'card':
-        iconComponent = CreditCard;
-        break;
-      case 'bank':
-        iconComponent = DollarSign;
-        break;
-      case 'mobile':
-        iconComponent = Smartphone;
-        break;
-      default:
-        iconComponent = Wallet;
-    }
-    
-    if (editingPaymentMethod.value && selectedPaymentMethodId.value) {
-      // Update existing payment method
-      const index = paymentMethods.value.findIndex(m => m.id === selectedPaymentMethodId.value);
-      if (index !== -1) {
-        paymentMethods.value[index] = {
-          id: selectedPaymentMethodId.value,
-          name: paymentMethodForm.name,
-          type: paymentMethodForm.type,
-          description: paymentMethodForm.description,
-          enabled: paymentMethodForm.enabled,
-          icon: iconComponent
-        };
-      }
-      
-      successMessage.value = 'Payment method updated successfully!';
-    } else {
-      // Create new payment method
-      const newId = Math.max(0, ...paymentMethods.value.map(m => m.id)) + 1;
-      paymentMethods.value.push({
-        id: newId,
-        name: paymentMethodForm.name,
-        type: paymentMethodForm.type,
-        description: paymentMethodForm.description,
-        enabled: paymentMethodForm.enabled,
-        icon: iconComponent
-      });
-      
-      successMessage.value = 'Payment method added successfully!';
-    }
-    
-    showSuccessNotification.value = true;
-    
-    // Auto-hide notification after 3 seconds
-    setTimeout(() => {
-      showSuccessNotification.value = false;
-    }, 3000);
-    
-    closeAddPaymentMethodModal();
-  };
-  
-  const togglePaymentMethod = (method: any) => {
-    const index = paymentMethods.value.findIndex(m => m.id === method.id);
-    if (index !== -1) {
-      paymentMethods.value[index].enabled = !paymentMethods.value[index].enabled;
-      
-      showSuccessNotification.value = true;
-      successMessage.value = `${method.name} ${paymentMethods.value[index].enabled ? 'enabled' : 'disabled'} successfully!`;
-      
-      // Auto-hide notification after 3 seconds
-      setTimeout(() => {
-        showSuccessNotification.value = false;
-      }, 3000);
-    }
-  };
+})
+</script>
 
-  definePageMeta({
-      layout: 'dashboard'
-  })
-  </script>
-  
-  <style scoped>
-  .animate-fade-in {
-    animation: fadeIn 0.6s ease-out forwards;
+<style scoped>
+/* Profile and Financial Item Styles */
+.profile-item, .financial-item {
+  @apply flex items-start gap-3 p-3 rounded-lg hover:bg-purple-50 transition-colors;
+}
+
+.profile-icon, .financial-icon {
+  @apply flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600;
+}
+
+/* Animations */
+.slide-in-top {
+  animation: slideInTop 0.5s ease-out forwards;
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.5s ease-out forwards;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.5s ease-out forwards;
+}
+
+.slide-in-bottom {
+  animation: slideInBottom 0.5s ease-out forwards;
+}
+
+.slide-in-up {
+  animation: slideInUp 0.5s ease-out forwards;
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.modal-animation {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.toast-animation {
+  animation: slideInRight 0.3s ease-out forwards;
+}
+
+/* Church Loader Animation */
+.church-loader {
+  @apply relative w-full h-full;
+}
+
+.church-steeple {
+  @apply absolute top-0 left-1/2 -translate-x-1/2 w-8 h-8 bg-purple-600;
+  clip-path: polygon(0% 100%, 50% 0%, 100% 100%);
+  animation: pulse 1.5s infinite;
+}
+
+.church-body {
+  @apply absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-8 bg-purple-500 rounded-t-lg;
+  animation: pulse 1.5s infinite 0.3s;
+}
+
+@keyframes slideInTop {
+  from {
+    transform: translateY(-20px);
     opacity: 0;
   }
-  
-  .animation-delay-100 {
-    animation-delay: 100ms;
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
-  
-  .animation-delay-200 {
-    animation-delay: 200ms;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
   }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  to {
+    transform: translateX(0);
+    opacity: 1;
   }
-  </style>
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInBottom {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+</style>

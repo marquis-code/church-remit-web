@@ -5,11 +5,13 @@ const user = ref(null);
 const runtimeData = {
   auth: ref(),
   user: ref({} as any),
+  church: ref({} as any),
   token: ref(""),
 };
 const localStorageData = {
   auth: ref(),
   user: useStorage("user", {} as any),
+  church: useStorage("church", {} as any),
   token: useStorage("token", ""),
 };
 
@@ -28,6 +30,7 @@ watch(
 (() => {
   runtimeData.auth.value = localStorageData.auth.value;
   runtimeData.user.value = localStorageData.user.value;
+  runtimeData.church.value = localStorageData.church.value;
   runtimeData.token.value = localStorageData.token.value;
 })();
 
@@ -56,16 +59,20 @@ export const useUser = () => {
   const logOut = () => {
     localStorage.clear();
     runtimeData.user.value = null;
+    runtimeData.church.value = null;
   };
 
   const setToken = (token: string) => {
     runtimeData.token.value = token;
     localStorageData.token.value = token;
   };
-  const createUser = (user: any) => {
-    runtimeData.user.value = user?.user;
-    localStorageData.token.value = user?.accessToken;
-    runtimeData.token.value = user?.accessToken;
+  const createUser = (data: any) => {
+    runtimeData.user.value = data?.user;
+    localStorageData.user.value = data?.user;
+    localStorageData.token.value = data?.token;
+    runtimeData.token.value = data?.token;
+    localStorageData.church.value = data?.church;
+    runtimeData.church.value = data?.church;
   };
 
   const updateUser = (user: any) => {

@@ -1,4 +1,4 @@
-import { GATEWAY_ENDPOINT } from '../axios.config'
+import { GATEWAY_ENDPOINT } from "../axios.config";
 
 // Type Definitions
 
@@ -47,17 +47,17 @@ type EventQueryParams = {
 export const event_mgt_api = {
     $_create_event: async (id: string, payload: Event) => {
       const url = `/events/branch/${id}`
-      return axios.post(url, payload)
+      return GATEWAY_ENDPOINT.post(url, payload)
     },
   
     $_get_events: async (branchId: string, params?: EventQueryParams) => {
         const url = `${GATEWAY_ENDPOINT}/events/branch/${branchId}`
-        return axios.get(url, { params })
+        return GATEWAY_ENDPOINT.get(url, { params })
       },
   
     $_assign_volunteer_to_event: async (eventId: string, payload: VolunteerAssignment) => {
       const url = `/events/${eventId}/volunteers`
-      return axios.post(url, payload)
+      return GATEWAY_ENDPOINT.post(url, payload)
     }
   }
   

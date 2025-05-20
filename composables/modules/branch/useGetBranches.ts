@@ -6,7 +6,7 @@ export const useGetBranches = () => {
   const error = ref<string | null>(null)
   const branches = ref<Branch[]>([])
 
-  const getBranches = async (churchId: string) => {
+  const getBranches = async () => {
     loading.value = true
     error.value = null
 
@@ -21,6 +21,10 @@ export const useGetBranches = () => {
       loading.value = false
     }
   }
+
+  onMounted(() => {
+    getBranches()
+  })
 
   return {
     loading,
