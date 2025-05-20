@@ -430,10 +430,6 @@ const handleReportSaved = (report) => {
   console.log('Report saved:', report);
 };
 
-definePageMeta({
-  layout: 'dashboard'
-});
-
   // Stats data
   const stats = [
     {

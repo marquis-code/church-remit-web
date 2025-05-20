@@ -644,9 +644,6 @@
   
   const router = useRouter();
   
-  definePageMeta({
-    layout: 'dashboard'
-  })
 
   // View state
   const viewMode = ref('grid');
